@@ -12,7 +12,7 @@ class Game():
         self.menu()
         self.root.new_but( "close", "close_button.png", {"w" :54, "h" :54}, {"anchor" :NE, "x" :w, "y" :0}, self.root.destroy)
 
-    def menu( self ):
+    def create_menu( self ):
         self.menu=App( self.root, "menu.png" );
         self.menu.new_but( "solo", "solo_button.png", {"w" :474, "h" :134}, {"anchor" :N, "relx" :0.5, "rely" :0.4}, print )
         self.menu.new_but( "multi", "multi_button.png", {"w" :474, "h" :134}, {"anchor" :N, "relx" :0.5, "rely" :0.55},  print )
@@ -20,7 +20,8 @@ class Game():
         self.menu.tk.mainloop()
 
     def rules( self ):
-        print("")
+        self.menu.destroy()
+        self.rules=App( self.root, "bg.png" );
 
 
     # def menu_solo( self ):
