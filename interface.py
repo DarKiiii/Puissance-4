@@ -12,6 +12,7 @@ class Root:
     def __init__(self, w, h):
         self.tk = Tk()
         scrw, scrh = self.tk.winfo_screenwidth(), self.tk.winfo_screenheight();
+        self.tk.title("Puissance 4")
         self.tk.geometry("%dx%d+%d+%d"%(w, h, scrw/2-w/2, scrh/2-h/2));
         self.tk.resizable(False, False)
         self.buts = {};
