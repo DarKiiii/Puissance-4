@@ -37,9 +37,25 @@ class App:
         self.tk = Label(master.tk, image=self.img);
         self.tk.pack();
         self.buts = {};
+        self.entry = {};
+        self.color = "red"
 
     def new_but(self, name, img, size, pos, onclick, args=()):
         self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
+
+    def new_text( self,name,pos,size ):
+        self.entry[name] = ZoneSaisie(self,size,pos)
+
+    def destroy_buts( self ):
+        button = self.buts["color"]
+        if self.color == "red":
+            self.new_but( "color", "color_yel.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts )
+            self.color = "yel"
+        else:
+            self.new_but( "color", "color_red.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts )
+            self.color = "red"
+
+
 
     def destroy(self):
         self.tk.destroy()
@@ -59,6 +75,18 @@ class ImgButton:
         self.tk = Label(master.tk, image=self.img, bd=0);
         self.tk.bind("<ButtonPress-1>", lambda event : onclick(*args));
         self.tk.place(pos);
+
+    def destroy(self):
+        self.tk.destroy();
+        del(self)
+
+
+class ZoneSaisie:
+
+    def __init__(self,master,size,pos):
+        self.master = master
+        self.tk = Entry(master.tk,bd=0,bg='#400000',font = ("Helvetica",35));
+        self.tk.place(w = 250, h =50,relx=0.41,rely=0.384);
 
     def destroy(self):
         self.tk.destroy();
