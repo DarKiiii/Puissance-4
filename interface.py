@@ -16,8 +16,8 @@ class Root:
         self.tk.resizable(False, False)
         self.buts = {};
 
-    def new_but(self, name, img, onclick, size, pos):
-        self.buts[name] = ImgButton(self, img, onclick, size, pos);
+    def new_but(self, name, img, size, pos, onclick, args=()):
+        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def destroy(self):
         self.tk.destroy()
@@ -37,8 +37,8 @@ class App:
         self.tk.pack();
         self.buts = {};
 
-    def new_but(self, name, img, onclick, size, pos):
-        self.buts[name] = ImgButton(self, img, onclick, size, pos);
+    def new_but(self, name, img, size, pos, onclick, args=()):
+        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def destroy(self):
         self.tk.destroy()
@@ -52,11 +52,11 @@ class ImgButton:
     size    : dictionary with real size of the image
     pos     : args for tk.place function
     '''
-    def __init__(self, master, img, onclick, size, pos):
+    def __init__(self, master, img, size, pos, onclick, args=()):
         self.master = master
         self.img = ImageTk.PhotoImage(Image.open(img).resize((round(size["w"]*(w/1920)), round(size["h"]*(h/1080))), Image.ANTIALIAS));
         self.tk = Label(master.tk, image=self.img, bd=0);
-        self.tk.bind("<ButtonPress-1>", lambda event : onclick());
+        self.tk.bind("<ButtonPress-1>", lambda event : onclick(*args));
         self.tk.place(pos);
 
     def destroy(self):
