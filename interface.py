@@ -48,6 +48,7 @@ class App:
 
     def destroy_buts( self ):
         button = self.buts["color"]
+        button.tk.destroy()
         if self.color == "red":
             self.new_but( "color", "color_yel.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts )
             self.color = "yel"
