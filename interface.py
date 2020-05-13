@@ -44,7 +44,7 @@ class App:
         self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def new_text( self,name,pos,size ):
-        self.entry[name] = ZoneSaisie(self,size,pos)
+        self.entry[name] = ZoneSaisie(self,size,pos);
 
     def destroy_buts( self ):
         button = self.buts["color"]
