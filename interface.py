@@ -4,6 +4,22 @@ from tkinter import *; import random; from PIL import Image, ImageTk;
 # CONFIG
 w, h = 1280, 720
 
+def none():
+    return None
+
+def img_resize(img_name, size):
+    img = Image.open(img_name);
+    width, height = img.size;
+    if size["w"] and size["h"]:
+        resized_img = img.resize((size["w"], size["h"]));
+    elif size["w"]:
+        resized_img = img.resize((size["w"], round(height*(size["w"]/width))));
+    elif size["h"]:
+        resized_img = img.resize((round(width*(size["h"]/height)), size["h"]));
+    else:
+        print("error appened while resizing", img_name, "image")
+    return ImageTk.PhotoImage(resized_img, Image.ANTIALIAS);
+
 # ---------- MODULES -----------
 class Root:
     '''
@@ -15,10 +31,14 @@ class Root:
         self.tk.title("Puissance 4")
         self.tk.geometry("%dx%d+%d+%d"%(w, h, scrw/2-w/2, scrh/2-h/2));
         self.tk.resizable(False, False)
-        self.buts = {};
+        self.widgets = {};
 
-    def new_but(self, name, img, size, pos, onclick, args=()):
-        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
+    def new_but(self, name, img, size, pos, onclick=none, args=()):
+        self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
+
+    def lift_widgets(self):
+        for k, w in self.widgets.items():
+            w.tk.lift();
 
     def destroy(self):
         self.tk.destroy()
@@ -28,7 +48,7 @@ class Root:
 
 class App:
     '''
-    tkinter label that can be used as non direct parent for other widgets
+    tkinter label that can be used as direct parent for other widgets
     img     : path to image
     '''
     def __init__(self, master, img):
@@ -36,31 +56,25 @@ class App:
         self.img = ImageTk.PhotoImage(Image.open(img).resize((w, h)), Image.ANTIALIAS);
         self.tk = Label(master.tk, image=self.img);
         self.tk.pack();
-        self.buts = {};
-        self.entry = {};
-        self.color = "red"
+        self.widgets = {};
 
-    def new_but(self, name, img, size, pos, onclick, args=()):
-        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
+    def new_but(self, name, img, size, pos, onclick=none, args=()):
+        self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
 
-    def new_text( self,name,pos,size ):
-        self.entry[name] = ZoneSaisie(self,size,pos);
+    def new_entry(self, name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+        self.widgets[name] = TxtInput(self, size, pos, font, bg, default);
 
-    def destroy_buts( self ):
-        button = self.buts["color"]
-        button.tk.destroy()
-        if self.color == "red":
-            self.new_but( "color", "color_yel.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts )
-            self.color = "yel"
-        else:
-            self.new_but( "color", "color_red.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts )
-            self.color = "red"
+    def new_switch(self, name, img, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.widgets[name] = Switch(self, img, size, pos, onclick, args, default, vars);
 
-
+    def lift_widgets(self):
+        for k, w in self.widgets.items():
+            w.tk.lift();
+        self.master.lift_widgets()
 
     def destroy(self):
-        self.tk.destroy()
-        del(self)
+        self.tk.destroy();
+        del(self);
 
 class ImgButton:
     '''
@@ -70,25 +84,56 @@ class ImgButton:
     size    : dictionary with real size of the image
     pos     : args for tk.place function
     '''
-    def __init__(self, master, img, size, pos, onclick, args=()):
-        self.master = master
-        self.img = ImageTk.PhotoImage(Image.open(img).resize((round(size["w"]*(w/1920)), round(size["h"]*(h/1080))), Image.ANTIALIAS));
+    def __init__(self, master, img, size, pos, onclick=none, args=()):
+        self.master = master;
+        self.img = img_resize(img, size)
         self.tk = Label(master.tk, image=self.img, bd=0);
         self.tk.bind("<ButtonPress-1>", lambda event : onclick(*args));
         self.tk.place(pos);
 
     def destroy(self):
         self.tk.destroy();
-        del(self)
+        del(self);
 
 
-class ZoneSaisie:
+class TxtInput:
 
-    def __init__(self,master,size,pos):
-        self.master = master
-        self.tk = Entry(master.tk,bd=0,bg='#400000',font = ("Helvetica",35));
-        self.tk.place(w = 250, h =50,relx=0.41,rely=0.384);
+    def __init__(self, master, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+        self.master = master;
+        self.txtvar = StringVar();
+        self.txtvar.set(default);
+        self.tk = Entry(master.tk, bd=0, bg=bg, width=size["w"], font=font, textvariable=self.txtvar);
+        self.tk.place(pos);
 
     def destroy(self):
         self.tk.destroy();
-        del(self)
+        del(self);
+
+
+class Switch:
+
+    def __init__(self, master, imgs, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.master = master;
+        self.imgs = []
+        for img in imgs:
+            self.imgs.append(img_resize(img, size))
+        self.var = default
+        self.cmd = onclick
+        self.args = args
+        self.vars = vars
+        self.tk = Label(master.tk, image=self.imgs[self.var], bd=0);
+        self.tk.bind("<ButtonPress-1>", lambda event : self.clicked());
+        self.tk.place(pos);
+
+    def clicked(self):
+        self.cmd(*self.args);
+        self.var += 1;
+        if self.var >= len(self.imgs) or self.var >= len(self.vars):
+            self.var = 0;
+        self.tk.configure(image=self.imgs[self.var]);
+        self.master.lift_widgets();
+
+    def destroy(self):
+        self.tk.destroy();
+        del(self);
+
