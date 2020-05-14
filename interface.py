@@ -31,14 +31,14 @@ class Root:
         self.tk.title("Puissance 4")
         self.tk.geometry("%dx%d+%d+%d"%(w, h, scrw/2-w/2, scrh/2-h/2));
         self.tk.resizable(False, False)
-        self.buts = {};
+        self.widgets = {};
 
     def new_but(self, name, img, size, pos, onclick=none, args=()):
-        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
+        self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def lift_widgets(self):
-        for k, w in self.buts.items():
-            w.tk.lift()
+        for k, w in self.widgets.items():
+            w.tk.lift();
 
     def destroy(self):
         self.tk.destroy()
@@ -56,31 +56,21 @@ class App:
         self.img = ImageTk.PhotoImage(Image.open(img).resize((w, h)), Image.ANTIALIAS);
         self.tk = Label(master.tk, image=self.img);
         self.tk.pack();
-        self.buts = {};
-        self.entry = {};
+        self.widgets = {};
 
     def new_but(self, name, img, size, pos, onclick=none, args=()):
-        self.buts[name] = ImgButton(self, img, size, pos, onclick, args);
+        self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def new_entry(self, name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
-        self.entry[name] = TxtInput(self, size, pos, font, bg, default);
+        self.widgets[name] = TxtInput(self, size, pos, font, bg, default);
+
+    def new_switch(self, name, img, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.widgets[name] = Switch(self, img, size, pos, onclick, args, default, vars);
 
     def lift_widgets(self):
-        for k, w in self.buts.items():
-            w.tk.lift();
-        for k, w in self.entry.items():
+        for k, w in self.widgets.items():
             w.tk.lift();
         self.master.lift_widgets()
-
-    # def destroy_buts( self ):
-    #     button = self.buts["color"]
-    #     button.tk.destroy();
-    #     if self.color == "red":
-    #         self.new_but( "color", "color_yel.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts );
-    #         self.color = "yel"
-    #     else:
-    #         self.new_but( "color", "color_red.png", {"w" :250, "h" :50}, {"anchor" :N, "relx" :0.515, "rely" :0.522},self.destroy_buts );
-    #         self.color = "red";
 
     def destroy(self):
         self.tk.destroy();
@@ -118,3 +108,32 @@ class TxtInput:
     def destroy(self):
         self.tk.destroy();
         del(self);
+
+
+class Switch:
+
+    def __init__(self, master, imgs, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.master = master;
+        self.imgs = []
+        for img in imgs:
+            self.imgs.append(img_resize(img, size))
+        self.var = default
+        self.cmd = onclick
+        self.args = args
+        self.vars = vars
+        self.tk = Label(master.tk, image=self.imgs[self.var], bd=0);
+        self.tk.bind("<ButtonPress-1>", lambda event : self.clicked());
+        self.tk.place(pos);
+
+    def clicked(self):
+        self.cmd(*self.args);
+        self.var += 1;
+        if self.var >= len(self.imgs) or self.var >= len(self.vars):
+            self.var = 0;
+        self.tk.configure(image=self.imgs[self.var]);
+        self.master.lift_widgets();
+
+    def destroy(self):
+        self.tk.destroy();
+        del(self);
+
