@@ -63,7 +63,8 @@ class App:
         self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
 
     def new_entry(self, name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
-        self.widgets[name] = TxtInput(self, size, pos, font, bg, default);
+        self.widgets[name] = TxtInput(self,name, size, pos, font, bg, default);
+        self.widgets_info[name]= None
 
     def new_switch(self, name, img, size, pos, onclick=none, args=(), default=0, vars=()):
         self.widgets[name] = Switch(self, img,name, size, pos, onclick, args, default, vars);
@@ -107,21 +108,26 @@ class ImgButton:
 
 class TxtInput:
 
-    def __init__(self, master, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+    def __init__(self, master,name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+        self.name = name
         self.master = master;
         self.txtvar = StringVar();
         self.txtvar.set(default);
         self.tk = Entry(master.tk, bd=0, bg=bg, width=size["w"], font=font, textvariable=self.txtvar);
+        self.tk.bind( "<KeyRelease>", lambda event :self.clicked() ) ;
         self.tk.place(pos);
 
     def destroy(self):
         self.tk.destroy();
         del(self);
 
+    def clicked( self ):
+        var = self.tk.get()
+        self.master.set_setting(var,self.name)
 
 class Switch:
 
-    def __init__(self, master, imgs,name, size, pos, onclick=none, args=(), default=0, vars=()):
+    def __init__(self, master,imgs,name, size, pos, onclick=none, args=(), default=0, vars=()):
         self.master = master;
         self.name = name
         self.imgs = []

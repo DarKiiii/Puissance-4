@@ -62,8 +62,10 @@ class Game():
 
     def game_duo( self ):
         if self.menu:
-            difficulter = self.menu.get_setting()
-            print(difficulter)
+            settings = self.menu.get_setting()
+            if settings["playername_red"] == None or settings["playername_yel"] == None:
+                return
+            print(settings)
             self.menu.destroy();
         self.menu = App(self.root,'bg-jeux.png');
         self.menu.new_but("grille","grille.png", {"w" :round( 1046 * (w / 1920) ), "h" :round( 852 * (h / 1080) )},{"anchor" :N, "relx" :0.5, "rely" :0.2},print);
