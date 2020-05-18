@@ -57,6 +57,7 @@ class App:
         self.tk = Label(master.tk, image=self.img);
         self.tk.pack();
         self.widgets = {};
+        self.widgets_info = {};
 
     def new_but(self, name, img, size, pos, onclick=none, args=()):
         self.widgets[name] = ImgButton(self, img, size, pos, onclick, args);
@@ -65,12 +66,20 @@ class App:
         self.widgets[name] = TxtInput(self, size, pos, font, bg, default);
 
     def new_switch(self, name, img, size, pos, onclick=none, args=(), default=0, vars=()):
-        self.widgets[name] = Switch(self, img, size, pos, onclick, args, default, vars);
+        self.widgets[name] = Switch(self, img,name, size, pos, onclick, args, default, vars);
+        self.widgets_info[name] = 0
+
+    def get_setting( self ):
+        return self.widgets_info
+
+    def set_setting( self,var,name):
+        self.widgets_info[name] = var
 
     def lift_widgets(self):
         for k, w in self.widgets.items():
             w.tk.lift();
         self.master.lift_widgets()
+
 
     def destroy(self):
         self.tk.destroy();
@@ -112,8 +121,9 @@ class TxtInput:
 
 class Switch:
 
-    def __init__(self, master, imgs, size, pos, onclick=none, args=(), default=0, vars=()):
+    def __init__(self, master, imgs,name, size, pos, onclick=none, args=(), default=0, vars=()):
         self.master = master;
+        self.name = name
         self.imgs = []
         for img in imgs:
             self.imgs.append(img_resize(img, size))
@@ -130,10 +140,12 @@ class Switch:
         self.var += 1;
         if self.var >= len(self.imgs) or self.var >= len(self.vars):
             self.var = 0;
+        self.master.set_setting(self.var,self.name);
         self.tk.configure(image=self.imgs[self.var]);
         self.master.lift_widgets();
 
     def destroy(self):
         self.tk.destroy();
         del(self);
+
 
