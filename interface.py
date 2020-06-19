@@ -70,6 +70,14 @@ class App:
         self.widgets[name] = Switch(self, img,name, size, pos, onclick, args, default, vars);
         self.widgets_info[name] = 0
 
+    def new_switch_mouse(self, name, img, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.widgets[name] = SwitchMouse(self, img,name, size, pos, onclick, args, default, vars);
+        self.widgets_info[name]=0
+
+    def texte(self, name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+        self.widgets[name] = Txt(self,name, size, pos, font, bg, default);
+
+
     def get_setting( self ):
         return self.widgets_info
 
@@ -125,6 +133,25 @@ class TxtInput:
         var = self.tk.get()
         self.master.set_setting(var,self.name)
 
+class Txt:
+
+    def __init__(self, master,name, size, pos, font=("Helvetica",10), bg='#FFF', default=""):
+        self.name = name
+        self.master = master;
+        self.txtvar = StringVar();
+        self.txtvar.set(default);
+        self.tk = Text(master.tk, bd=0, bg=bg, width=size["w"], font=font, textvariable=self.txtvar);
+        self.tk.bind( "<KeyRelease>", lambda event :self.clicked() ) ;
+        self.tk.place(pos);
+
+    def destroy(self):
+        self.tk.destroy();
+        del(self);
+
+    def clicked( self ):
+        var = self.tk.get()
+        self.master.set_setting(var,self.name)
+
 class Switch:
 
     def __init__(self, master,imgs,name, size, pos, onclick=none, args=(), default=0, vars=()):
@@ -154,4 +181,33 @@ class Switch:
         self.tk.destroy();
         del(self);
 
+
+class SwitchMouse:
+
+    def __init__(self, master,imgs,name, size, pos, onclick=none, args=(), default=0, vars=()):
+        self.master = master;
+        self.name = name
+        self.imgs = []
+        for img in imgs:
+            self.imgs.append(img_resize(img, size))
+        self.var = default
+        self.cmd = onclick
+        self.args = args
+        self.vars = vars
+        self.tk = Label(master.tk, image=self.imgs[self.var], bd=0);
+        self.tk.bind("<Motion>", lambda event : self.clicked());
+        self.tk.place(pos);
+
+    def clicked(self):
+        self.cmd(*self.args);
+        self.var += 1;
+        if self.var >= len(self.imgs) or self.var >= len(self.vars):
+            self.var = 0;
+        self.master.set_setting(self.var,self.name);
+        self.tk.configure(image=self.imgs[self.var]);
+        self.master.lift_widgets();
+
+    def destroy(self):
+        self.tk.destroy();
+        del(self);
 

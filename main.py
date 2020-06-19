@@ -69,6 +69,18 @@ class Game():
             self.menu.destroy();
         self.menu = App(self.root,'bg-jeux.png');
         self.menu.new_but("grille","grille.png", {"w" :round( 1046 * (w / 1920) ), "h" :round( 852 * (h / 1080) )},{"anchor" :N, "relx" :0.5, "rely" :0.2},print);
+        self.menu.new_but( "f1", "fleche blue.png", {"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.266, "rely" :0.06},print);
+        self.menu.new_but( "f2", "fleche blue.png",{"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.345, "rely" :0.06}, print ) ;
+        self.menu.new_but( "f3", "fleche blue.png",{"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.424, "rely" :0.06}, print ) ;
+        self.menu.new_but( "f4", "fleche blue.png",{"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.503, "rely" :0.06}, print ) ;
+        self.menu.new_but( "f5", "fleche blue.png",{"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.582, "rely" :0.06}, print ) ;
+        self.menu.new_but( "f6", "fleche blue.png",{"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.661, "rely" :0.06}, print ) ;
+        self.menu.new_but( "f7", "fleche blue.png", {"w" :round( 138 * (w / 1920) ), "h" :round( 150 * (h / 1080) )},{"anchor" :N, "relx" :0.740, "rely" :0.06}, print ) ;
+        self.menu.new_but( "pred", "perso-red.png", {"w" :round( 407 * (w / 1920) ), "h" :round( 532 * (h / 1080) )},
+                           {"anchor" :N, "relx" :0.9, "rely" :0.3}, print ) ;
+        self.menu.new_but( "pyel", "perso-yel.png", {"w" :round( 407 * (w / 1920) ), "h" :round( 532 * (h / 1080) )},
+                           {"anchor" :N, "relx" :0.1, "rely" :0.3}, print ) ;
+        self.menu.texte("playername_red_name",{"w" :14},{"relx" :0.21, "rely" :0.68}, ("Helvetica",27), "#400000", settings["playername_red"])
         self.menu.lift_widgets();
         self.menu.tk.mainloop();
 
